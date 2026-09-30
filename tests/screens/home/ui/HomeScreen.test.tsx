@@ -327,6 +327,10 @@ describe("HomeScreen", () => {
         );
       }
 
+      if (url.startsWith("/api/transcript/cues?")) {
+        return jsonResponse({ cues: [{ start: 69.366, end: 75, text: "실제 대사 자막" }] });
+      }
+
       if (url.endsWith("/api/projects/generate")) {
         return jsonResponse({
           runId: "run-001",
@@ -430,7 +434,7 @@ describe("HomeScreen", () => {
     fillBaseFields();
     fireEvent.click(screen.getByRole("button", { name: "쇼츠 후보 생성" }));
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(5));
     const planBody = JSON.parse(String(fetchMock.mock.calls[3]?.[1]?.body));
     expect(planBody).toMatchObject({
       provider: "codex",
@@ -513,7 +517,7 @@ describe("HomeScreen", () => {
     expect((await screen.findAllByText("강조 1")).length).toBeGreaterThan(0);
     expect(screen.getByText("123,456 tokens")).toBeInTheDocument();
 
-    expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([
+    expect(fetchMock.mock.calls.map(([input]) => String(input)).filter((url) => !url.startsWith("/api/transcript/cues?"))).toEqual([
       "/api/sessions",
       `/api/sessions/${defaultEncodedSessionId}/transcribe`,
       `/api/sessions/${defaultEncodedSessionId}/plan`,
@@ -618,9 +622,9 @@ describe("HomeScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: "쇼츠 후보 생성" }));
 
     await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(fetchMock).toHaveBeenCalledTimes(4);
     });
-    expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([
+    expect(fetchMock.mock.calls.map(([input]) => String(input)).filter((url) => !url.startsWith("/api/transcript/cues?"))).toEqual([
       "/api/sessions",
       `/api/sessions/${encodedSessionId}/transcribe`,
       `/api/sessions/${encodedSessionId}/plan`,

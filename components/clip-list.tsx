@@ -18,12 +18,16 @@ import {
 } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { PlanUsage } from "@/types/planner";
+import type { SubtitleCue } from "@/lib/subtitles/cues";
+import type { SubtitleStyle } from "@/lib/subtitles/style";
 
 type ClipListProps = {
   clips: ReviewedClip[];
   videoPath: string;
   channelImagePath: string;
   usage?: PlanUsage;
+  subtitleCues?: SubtitleCue[];
+  subtitleStyle?: SubtitleStyle;
   disabled?: boolean;
   onToggleEnabled: (clipId: string, enabled: boolean) => void;
   onSelectTopHighlight: (clipId: string, value: string) => void;
@@ -52,6 +56,8 @@ export function ClipList({
   videoPath,
   channelImagePath,
   usage,
+  subtitleCues,
+  subtitleStyle,
   disabled = false,
   onToggleEnabled,
   onSelectTopHighlight,
@@ -133,6 +139,8 @@ export function ClipList({
                     videoPath={videoPath}
                     channelImagePath={channelImagePath}
                     compact
+                    subtitleCues={subtitleCues}
+                    subtitleStyle={subtitleStyle}
                   />
 
                   <div className="flex items-start justify-between gap-2">

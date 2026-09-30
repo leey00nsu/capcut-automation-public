@@ -1,5 +1,6 @@
 import type { PlanResponse, PlannerClip } from "@/types/planner";
 import type { ProjectGenerationRequest, ProjectSelection } from "@/types/project";
+import type { SubtitleStyle } from "@/lib/subtitles/style";
 
 export type ReviewedClip = PlannerClip & {
   enabled: boolean;
@@ -88,12 +89,16 @@ export function buildGenerationRequest(input: {
   videoPath: string;
   originalTitle: string;
   profileImagePath?: string;
+  transcriptPath?: string;
+  subtitleStyle?: SubtitleStyle;
   clips: ReviewedClip[];
 }): ProjectGenerationRequest {
   return {
     planId: input.planId,
     videoPath: input.videoPath,
     originalTitle: input.originalTitle,
+    ...(input.transcriptPath ? { transcriptPath: input.transcriptPath } : {}),
+    ...(input.subtitleStyle ? { subtitleStyle: input.subtitleStyle } : {}),
     ...(input.profileImagePath?.trim()
       ? { profileImagePath: input.profileImagePath.trim() }
       : {}),

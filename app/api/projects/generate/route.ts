@@ -21,6 +21,10 @@ import {
   getTemplateFontPath,
 } from "@/lib/capcut/template-defaults";
 import { patchTemplateFontPaths } from "@/lib/capcut/template-font";
+import { addTranscriptSubtitles } from "@/lib/capcut/subtitles";
+import { parseTranscriptCues, type SubtitleCue } from "@/lib/subtitles/cues";
+import { subtitleStyleSchema, type SubtitleStyle } from "@/lib/subtitles/style";
+import { readSubtitleFont } from "@/lib/subtitles/render";
 import {
   patchDraftInfo,
   type CapCutDraftInfo,
@@ -137,6 +141,8 @@ const requestSchema = z.object({
   videoPath: z.string().trim().min(1, "videoPath is required"),
   originalTitle: z.string().trim().min(1, "originalTitle is required"),
   profileImagePath: z.string().optional(),
+  transcriptPath: z.string().optional(),
+  subtitleStyle: subtitleStyleSchema.optional(),
   selections: z.array(requestSelectionSchema).min(1, "At least one selection is required"),
 });
 
@@ -149,6 +155,8 @@ type ValidatedGenerationRequest = ParsedGenerationRequest & {
   videoMetadata: MediaFileMetadata;
   profileImageMetadata: MediaFileMetadata;
   enabledSelections: ReviewedSelection[];
+  subtitleCues: SubtitleCue[];
+  subtitleFontPath: string;
 };
 
 function jsonError(status: number, code: string, message: string): NextResponse {
@@ -261,6 +269,19 @@ async function parseRequest(request: Request): Promise<ValidatedGenerationReques
 
   await ensureReadableFilePath(getTemplateFontPath(), "template font path");
 
+  let subtitleCues: SubtitleCue[] = [];
+  let subtitleFontPath = getTemplateFontPath();
+  if (normalized.subtitleStyle?.enabled) {
+    const transcriptPath = await ensureReadableFilePath(normalized.transcriptPath ?? "", "transcript path");
+    subtitleCues = parseTranscriptCues(await readFile(transcriptPath, "utf8"));
+    if (normalized.subtitleStyle.fontSource === "local") {
+      const fontPath = normalized.subtitleStyle.fontPath.trim();
+      if (!/\.(otf|ttf)$/i.test(fontPath)) throw new Error("로컬 폰트는 OTF 또는 TTF 파일을 선택하세요.");
+      subtitleFontPath = await ensureReadableFilePath(fontPath, "subtitle font path");
+    }
+    await readSubtitleFont(subtitleFontPath);
+  }
+
   const [videoMetadata, profileImageMetadata] = await Promise.all([
     getMediaFileMetadata(videoPath),
     getMediaFileMetadata(profileImagePath),
@@ -275,6 +296,8 @@ async function parseRequest(request: Request): Promise<ValidatedGenerationReques
     videoMetadata,
     profileImageMetadata,
     enabledSelections,
+    subtitleCues,
+    subtitleFontPath,
   };
 }
 
@@ -676,6 +699,9 @@ async function patchProjectDraft(
     profileImageMetadata: MediaFileMetadata;
     selection: ReviewedSelection;
     templateProjectPath: string;
+    subtitleStyle?: SubtitleStyle;
+    subtitleCues: SubtitleCue[];
+    subtitleFontPath: string;
   },
 ): Promise<void> {
   const draftInfoPath = join(projectDirectoryPath, "draft_info.json");
@@ -769,6 +795,27 @@ async function patchProjectDraft(
     topHighlightText: input.selection.topHighlightText,
     now,
   });
+  const subtitleMaterialIds: string[] = [];
+  if (input.subtitleStyle) {
+    const assets = await addTranscriptSubtitles(nextDraftInfo, {
+      stagingPath: projectDirectoryPath, finalPath: input.finalProjectPath,
+      start: clipStart / 1000000, end: clipEnd / 1000000,
+      cues: input.subtitleCues, style: input.subtitleStyle, fontPath: input.subtitleFontPath,
+    });
+    const photoEntry = typeZeroMaterials.find((entry) => entry.metetype === "photo");
+    for (const asset of assets) {
+      subtitleMaterialIds.push(asset.id);
+      typeZeroMaterials.push({ ...photoEntry, id: asset.id, file_Path: asset.path,
+        extra_info: basename(asset.path), metetype: "photo", type: 0,
+        width: nextDraftInfo.canvas_config.width, height: nextDraftInfo.canvas_config.height,
+        duration: clipDuration, create_time: Math.floor(now.getTime() / 1000),
+        import_time: Math.floor(now.getTime() / 1000), import_time_ms: now.getTime() * 1000,
+      });
+    }
+    if (typeof nextDraftMetaInfo.draft_timeline_materials_size_ === "number") {
+      nextDraftMetaInfo.draft_timeline_materials_size_ += assets.reduce((total, asset) => total + asset.size, 0);
+    }
+  }
   const nextDraftAgencyConfig = patchDraftAgencyConfig(draftAgencyConfig, {
     profileImagePath: input.profileImagePath,
   });
@@ -777,6 +824,7 @@ async function patchProjectDraft(
       placeholderMaterialId,
       photoMaterialId,
       videoMaterialId,
+      ...subtitleMaterialIds,
     ].flatMap((materialId) =>
       typeof materialId === "string" && materialId.length > 0 ? [materialId] : [],
     ),
@@ -1188,6 +1236,9 @@ async function generateProject(
       profileImageMetadata: input.profileImageMetadata,
       selection,
       templateProjectPath: input.templateProjectPath,
+      subtitleStyle: input.subtitleStyle,
+      subtitleCues: input.subtitleCues,
+      subtitleFontPath: input.subtitleFontPath,
     });
     await rename(stagingProjectPath, outputProjectPath);
     await rm(stagingRootPath, { recursive: true, force: true });

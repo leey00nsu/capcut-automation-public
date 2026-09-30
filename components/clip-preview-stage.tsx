@@ -16,6 +16,9 @@ import {
 } from "react";
 
 import type { ReviewedClip } from "@/components/clip-state";
+import { SubtitleFontFace, SubtitleText } from "@/components/subtitle-text";
+import type { SubtitleCue } from "@/lib/subtitles/cues";
+import type { SubtitleStyle } from "@/lib/subtitles/style";
 import {
   buildChannelImagePreviewSrc,
   buildLocalFontPreviewSrc,
@@ -28,6 +31,8 @@ type ClipPreviewStageProps = {
   videoPath: string;
   channelImagePath: string;
   compact?: boolean;
+  subtitleCues?: SubtitleCue[];
+  subtitleStyle?: SubtitleStyle;
 };
 
 const TEMPLATE_LAYOUT = {
@@ -112,12 +117,14 @@ function ClipRangePlayer({
   poster,
   clipStart,
   clipEnd,
+  onTimeChange,
 }: {
   clipIndex: number;
   source: string;
   poster: string;
   clipStart: number;
   clipEnd: number;
+  onTimeChange: (time: number) => void;
 }) {
   const playback = PreviewPlayer.usePlayer(selectPlayback);
   const time = PreviewPlayer.usePlayer(selectTime);
@@ -210,6 +217,7 @@ function ClipRangePlayer({
           playsInline
           preload="metadata"
           poster={poster}
+          onTimeUpdate={(event) => onTimeChange(event.currentTarget.currentTime)}
           onError={() => {
             setInitializedSource(null);
           }}
@@ -288,9 +296,14 @@ export function ClipPreviewStage({
   videoPath,
   channelImagePath,
   compact = false,
+  subtitleCues = [],
+  subtitleStyle,
 }: ClipPreviewStageProps) {
   const clipStart = useMemo(() => timecodeToSeconds(clip.start), [clip.start]);
   const clipEnd = useMemo(() => timecodeToSeconds(clip.end), [clip.end]);
+  const [previewTime, setPreviewTime] = useState(clipStart);
+  const activeSubtitle = subtitleCues.find((cue) => cue.start <= previewTime && cue.end > previewTime);
+  useEffect(() => setPreviewTime(clipStart), [clipStart]);
   const clipDuration = useMemo(
     () => Math.max(clipEnd - clipStart, 0),
     [clipEnd, clipStart],
@@ -316,6 +329,7 @@ export function ClipPreviewStage({
   return (
     <div className="flex justify-center">
       <TemplateFontFace />
+      {subtitleStyle ? <SubtitleFontFace style={subtitleStyle} /> : null}
       <div
         role="group"
         aria-label={`Clip ${index + 1} shorts preview`}
@@ -340,6 +354,7 @@ export function ClipPreviewStage({
                 poster={posterSrc}
                 clipStart={clipStart}
                 clipEnd={clipEnd}
+                onTimeChange={setPreviewTime}
               />
             </PreviewPlayer.Provider>
           ) : (
@@ -347,6 +362,12 @@ export function ClipPreviewStage({
               영상을 불러올 수 없습니다
             </div>
           )}
+          {subtitleStyle?.enabled && activeSubtitle ? (
+            <div aria-label={`Clip ${index + 1} transcript subtitle`} className="pointer-events-none absolute inset-x-0 -translate-y-1/2 text-center"
+              style={{ top: `${subtitleStyle.positionY}%` }}>
+              <SubtitleText text={activeSubtitle.text} style={subtitleStyle} />
+            </div>
+          ) : null}
         </div>
 
         <Position

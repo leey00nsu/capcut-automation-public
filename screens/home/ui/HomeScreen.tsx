@@ -10,6 +10,7 @@ import {
 import { ClipList } from "@/components/clip-list";
 import { GenerateResult } from "@/components/generate-result";
 import { PlannerOptionsPanel } from "@/components/planner-options-panel";
+import { SubtitleSettingsPanel } from "@/components/subtitle-settings-panel";
 import {
   PlanningStepper,
   type PlanningStepId,
@@ -49,6 +50,7 @@ import type {
 import type { LocalSttStatusResponse } from "@/types/local-stt";
 import type { ProjectGenerationResult } from "@/types/project";
 import type { PlanningSession } from "@/types/session";
+import type { SubtitleCue } from "@/lib/subtitles/cues";
 
 type Phase = "idle" | "planning" | "review" | "generating" | "results";
 type WorkflowTab = "shorts" | "options";
@@ -237,6 +239,9 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
   const [plannedSourceKey, setPlannedSourceKey] = useState<string | null>(null);
   const [clips, setClips] = useState<ReviewedClip[]>([]);
   const [result, setResult] = useState<ProjectGenerationResult | null>(null);
+  const [subtitleCues, setSubtitleCues] = useState<SubtitleCue[]>([]);
+  const [subtitleError, setSubtitleError] = useState<string | null>(null);
+  const [subtitlesLoading, setSubtitlesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [planningStep, setPlanningStep] = useState<PlanningStepId>("validate-input");
   const [localSttStatus, setLocalSttStatus] =
@@ -274,6 +279,20 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
       plannerOptions.fewShotExamples,
     ],
   );
+
+  useEffect(() => {
+    setSubtitleCues([]); setSubtitleError(null);
+    const path = plan?.source.transcriptPath;
+    if (!path || !plannerOptions.subtitleStyle.enabled) { setSubtitlesLoading(false); return; }
+    const controller = new AbortController();
+    setSubtitlesLoading(true);
+    fetch(`/api/transcript/cues?path=${encodeURIComponent(path)}`, { signal: controller.signal })
+      .then((response) => parseJsonResponse<{ cues: SubtitleCue[] }>(response))
+      .then((body) => { if (!controller.signal.aborted) setSubtitleCues(body.cues); })
+      .catch((error) => { if (!controller.signal.aborted) setSubtitleError(error instanceof Error ? error.message : "전사 자막을 불러올 수 없습니다."); })
+      .finally(() => { if (!controller.signal.aborted) setSubtitlesLoading(false); });
+    return () => controller.abort();
+  }, [plan?.source.transcriptPath, plannerOptions.subtitleStyle.enabled]);
 
   useEffect(() => {
     if (initialPlannerOptions) {
@@ -503,7 +522,7 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
     }
   }
 
-  async function handleSavePlannerOptions(options: PlannerOptions) {
+  async function persistPlannerOptions(options: PlannerOptions) {
     const response = await fetch("/api/planner-options", {
       method: "PUT",
       headers: {
@@ -518,6 +537,11 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
       JSON.stringify(savedOptions),
     );
     setPlannerOptions(savedOptions);
+    return savedOptions;
+  }
+
+  async function handleSavePlannerOptions(options: PlannerOptions) {
+    const savedOptions = await persistPlannerOptions(options);
     setFormValues((current) => ({
       ...current,
       provider: savedOptions.provider,
@@ -571,11 +595,18 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
       return;
     }
 
+    if (plannerOptions.subtitleStyle.enabled && (subtitlesLoading || subtitleError)) {
+      setError(subtitleError ?? "대사 자막을 불러오는 중입니다.");
+      return;
+    }
+
     const request = buildGenerationRequest({
       planId: plan.planId,
       videoPath: safeFormValues.videoPath.trim(),
       originalTitle: safeFormValues.originalTitle.trim(),
       profileImagePath: safeFormValues.channelImagePath.trim(),
+      transcriptPath: plan.source.transcriptPath,
+      subtitleStyle: plannerOptions.subtitleStyle,
       clips,
     });
 
@@ -824,6 +855,15 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
               }
               onImport={handleImportPlan}
               onSubmit={handlePlan}
+              subtitleSettings={
+                <SubtitleSettingsPanel
+                  value={plannerOptions.subtitleStyle}
+                  disabled={phase === "planning" || phase === "generating" || importingPlan}
+                  onSave={async (subtitleStyle) => {
+                    await persistPlannerOptions({ ...plannerOptions, subtitleStyle });
+                  }}
+                />
+              }
             />
 
             {phase === "planning" ? (
@@ -836,11 +876,14 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
 
             {clips.length > 0 ? (
               <section className="grid gap-5">
+            {subtitleError ? <p role="alert" className="rounded-xl bg-danger/10 p-4 text-sm text-danger">{subtitleError} 자막 설정에서 대사 자막 표시를 끄거나 타임코드가 있는 전사본을 사용하세요.</p> : null}
             <ClipList
               clips={clips}
               videoPath={safeFormValues.videoPath.trim()}
               channelImagePath={safeFormValues.channelImagePath.trim()}
               usage={plan?.usage}
+              subtitleCues={subtitleCues}
+              subtitleStyle={plannerOptions.subtitleStyle}
               disabled={phase === "planning" || phase === "generating"}
               onToggleEnabled={(clipId, enabled) => {
                 setClips((current) =>
@@ -880,7 +923,7 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
                 <Button
                   type="button"
                   size="lg"
-                  disabled={phase === "planning" || phase === "generating"}
+                  disabled={phase === "planning" || phase === "generating" || subtitlesLoading || !!subtitleError}
                   onClick={handleGenerate}
                   className="min-w-48"
                 >

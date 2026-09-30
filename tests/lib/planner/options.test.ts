@@ -58,6 +58,7 @@ describe("planner options", () => {
     });
     expect(restored?.modelOptions.codex).toContain("gpt-5.5");
     expect(restored?.fewShotExamples).toHaveLength(6);
+    expect(restored?.subtitleStyle).toMatchObject({ enabled: true, preset: "outline", fontSource: "bundled" });
   });
 
   it("parses the editable few-shot line format", () => {

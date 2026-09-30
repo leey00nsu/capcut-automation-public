@@ -1,3 +1,5 @@
+import type { SubtitleStyle } from "@/lib/subtitles/style";
+
 export type ProjectSelectionFields = {
   start: string;
   end: string;
@@ -24,6 +26,8 @@ export type ProjectGenerationRequest = {
   videoPath: string;
   originalTitle: string;
   profileImagePath?: string;
+  transcriptPath?: string;
+  subtitleStyle?: SubtitleStyle;
   selections: ProjectSelection[];
 };
 

@@ -78,6 +78,7 @@ type InputFormProps = {
   onLoadRecentPlan: (planFilePath: string) => void;
   onImport: () => void;
   onSubmit: () => void;
+  subtitleSettings?: ReactNode;
 };
 
 function Field({
@@ -141,6 +142,7 @@ export function InputForm({
   onLoadRecentPlan,
   onImport,
   onSubmit,
+  subtitleSettings,
 }: InputFormProps) {
   const isBusy = status === "planning" || status === "generating" || importingPlan;
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
@@ -588,6 +590,8 @@ export function InputForm({
               </div>
             ) : null}
           </div>
+
+          {subtitleSettings}
 
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="min-h-6 text-sm text-danger">

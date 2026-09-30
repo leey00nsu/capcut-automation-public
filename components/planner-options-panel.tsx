@@ -299,7 +299,7 @@ export function PlannerOptionsPanel({
                 onClick={() => {
                   setSaved(false);
                   setSaveError(null);
-                  setDraft(DEFAULT_PLANNER_OPTIONS);
+                  setDraft({ ...DEFAULT_PLANNER_OPTIONS, subtitleStyle: value.subtitleStyle });
                   setFewShotDraft(
                     formatFewShotExamples(DEFAULT_PLANNER_OPTIONS.fewShotExamples),
                   );

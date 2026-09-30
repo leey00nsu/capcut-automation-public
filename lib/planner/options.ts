@@ -1,4 +1,5 @@
 import { getDefaultPlannerModel, PROVIDER_MODEL_OPTIONS } from "@/lib/ai/models";
+import { DEFAULT_SUBTITLE_STYLE, subtitleStyleSchema, type SubtitleStyle } from "@/lib/subtitles/style";
 import {
   DEFAULT_HOOK_TEXT_FEW_SHOT_EXAMPLES,
   DEFAULT_PLANNER_PROMPT_INSTRUCTIONS,
@@ -17,6 +18,7 @@ export type PlannerOptions = {
   defaultModels: Record<PlannerProvider, string>;
   promptInstructions: string;
   fewShotExamples: HookTextFewShotExample[];
+  subtitleStyle: SubtitleStyle;
 };
 
 function defaultModelIds(provider: PlannerProvider): string[] {
@@ -24,6 +26,7 @@ function defaultModelIds(provider: PlannerProvider): string[] {
 }
 
 export const DEFAULT_PLANNER_OPTIONS: PlannerOptions = {
+  subtitleStyle: DEFAULT_SUBTITLE_STYLE,
   provider: "codex",
   model: getDefaultPlannerModel("codex"),
   modelOptions: {
@@ -225,6 +228,11 @@ export function parseStoredPlannerOptions(value: string | null): PlannerOptions 
       return null;
     }
 
+    const subtitleStyle = subtitleStyleSchema.safeParse(
+      "subtitleStyle" in parsed ? parsed.subtitleStyle : DEFAULT_SUBTITLE_STYLE,
+    );
+    if (!subtitleStyle.success || (subtitleStyle.data.fontSource === "local" && !subtitleStyle.data.fontPath.trim())) return null;
+
     return {
       provider: parsed.provider,
       model: parsed.model,
@@ -232,6 +240,7 @@ export function parseStoredPlannerOptions(value: string | null): PlannerOptions 
       defaultModels,
       promptInstructions: parsed.promptInstructions,
       fewShotExamples,
+      subtitleStyle: subtitleStyle.data,
     };
   } catch {
     return null;
