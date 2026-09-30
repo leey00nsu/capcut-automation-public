@@ -342,34 +342,6 @@ describe("HomeScreen", () => {
         });
       }
 
-      if (url.endsWith("/api/premiere/vrew/highlights")) {
-        return jsonResponse({
-          xmlPath: "/xml/vrew.xml",
-          durationPreset: "10",
-          highlightDurationSeconds: 10,
-          analysis: {
-            sourceVideoPath: "/videos/from-xml.mp4",
-            sequenceName: "sample",
-            duration: "00:00:20.000",
-            subtitles: [{ id: "subtitle-001" }],
-            gaps: [{ id: "gap-001" }],
-            candidates: [
-              {
-                id: "highlight-001",
-                start: "00:00:01.000",
-                end: "00:00:11.000",
-                anchor: "00:00:08.000",
-                durationSeconds: 10,
-                gapDurationSeconds: 1.4,
-                previousSubtitle: "직전",
-                nextSubtitle: "직후",
-                reason: "자막 공백 후보",
-              },
-            ],
-          },
-        });
-      }
-
       if (url.endsWith("/api/pick-path")) {
         return jsonResponse({
           canceled: false,
@@ -389,32 +361,31 @@ describe("HomeScreen", () => {
     vi.unstubAllGlobals();
   });
 
-  it("switches between shorts planning and Vrew highlight workflows with top tabs", () => {
+  it("switches between shorts planning and options with two top tabs", () => {
     render(<HomeScreen />);
 
+    expect(screen.getAllByRole("tab")).toHaveLength(2);
     expect(screen.getByRole("tab", { name: "쇼츠 후보 생성" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
-    expect(screen.getByRole("tab", { name: "하이라이트" })).toHaveAttribute(
-      "aria-selected",
-      "false",
-    );
     expect(screen.getByLabelText("Video path")).toBeInTheDocument();
-    expect(screen.queryByLabelText("Vrew XML path")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("tab", { name: "하이라이트" }));
+    fireEvent.click(screen.getByRole("tab", { name: "옵션" }));
 
     expect(screen.getByRole("tab", { name: "쇼츠 후보 생성" })).toHaveAttribute(
       "aria-selected",
       "false",
     );
-    expect(screen.getByRole("tab", { name: "하이라이트" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "옵션" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
     expect(screen.queryByLabelText("Video path")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Vrew XML path")).toBeInTheDocument();
+    expect(screen.getByLabelText("Options model list")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: "쇼츠 후보 생성" }));
+    expect(screen.getByLabelText("Video path")).toBeInTheDocument();
   });
 
   it("saves editable model lists, the default model, and the prompt", async () => {
@@ -469,39 +440,19 @@ describe("HomeScreen", () => {
     });
   });
 
-  it("uses the shared file picker for the Vrew XML path", async () => {
+  it("uses the shared file picker for the video path", async () => {
     render(<HomeScreen />);
 
-    fireEvent.click(screen.getByRole("tab", { name: "하이라이트" }));
-    fireEvent.click(screen.getByRole("button", { name: "찾아보기" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "찾아보기" })[0]);
 
     expect(await screen.findByDisplayValue("/picked/from-dialog")).toBeInTheDocument();
+    expect(screen.getByLabelText("Video path")).toHaveValue("/picked/from-dialog");
     expect(fetchMock.mock.calls.map(([input]) => String(input))).toEqual([
       "/api/pick-path",
     ]);
   });
 
-  it("lets the user override the source video path after Vrew XML analysis", async () => {
-    render(<HomeScreen />);
-
-    fireEvent.click(screen.getByRole("tab", { name: "하이라이트" }));
-    fireEvent.change(screen.getByLabelText("Vrew XML path"), {
-      target: { value: "/xml/vrew.xml" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "하이라이트 후보 생성" }));
-
-    expect(await screen.findByDisplayValue("/videos/from-xml.mp4")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "영상 찾아보기" }));
-
-    expect(await screen.findByDisplayValue("/picked/from-dialog")).toBeInTheDocument();
-    expect(screen.getByLabelText("Highlight 1 preview video")).toHaveAttribute(
-      "src",
-      "/api/local-video/segment?path=%2Fpicked%2Ffrom-dialog&start=1.000&end=11.000",
-    );
-  });
-
-  it("resets the Vrew XML browse button when the file picker request stalls", async () => {
+  it("resets the video browse button when the file picker request stalls", async () => {
     vi.useFakeTimers();
     fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
       const url =
@@ -521,8 +472,7 @@ describe("HomeScreen", () => {
     try {
       render(<HomeScreen />);
 
-      fireEvent.click(screen.getByRole("tab", { name: "하이라이트" }));
-      fireEvent.click(screen.getByRole("button", { name: "찾아보기" }));
+      fireEvent.click(screen.getAllByRole("button", { name: "찾아보기" })[0]);
 
       expect(screen.getByRole("button", { name: "열기 중..." })).toBeDisabled();
 
@@ -530,7 +480,7 @@ describe("HomeScreen", () => {
         await vi.advanceTimersByTimeAsync(30_001);
       });
 
-      expect(screen.getByRole("button", { name: "찾아보기" })).toBeEnabled();
+      expect(screen.getAllByRole("button", { name: "찾아보기" })[0]).toBeEnabled();
       expect(
         screen.getByText("파일 선택 응답이 지연되어 중단했습니다. 다시 시도하세요."),
       ).toBeInTheDocument();

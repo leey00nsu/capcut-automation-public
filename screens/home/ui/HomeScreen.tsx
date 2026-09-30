@@ -9,7 +9,6 @@ import {
 } from "@/components/clip-state";
 import { ClipList } from "@/components/clip-list";
 import { GenerateResult } from "@/components/generate-result";
-import { VrewHighlightPanel } from "@/components/vrew-highlight-panel";
 import { PlannerOptionsPanel } from "@/components/planner-options-panel";
 import {
   PlanningStepper,
@@ -52,8 +51,7 @@ import type { ProjectGenerationResult } from "@/types/project";
 import type { PlanningSession } from "@/types/session";
 
 type Phase = "idle" | "planning" | "review" | "generating" | "results";
-type WorkflowTab = "shorts" | "highlight" | "options";
-type BrowseFieldName = PathFieldName | "vrewXmlPath" | "vrewSourceVideoPath";
+type WorkflowTab = "shorts" | "options";
 const FILE_PICKER_TIMEOUT_MS = 30_000;
 
 type PlanningSource = {
@@ -230,9 +228,7 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
   const [plannerOptions, setPlannerOptions] = useState<PlannerOptions>(
     initialPlannerOptions ?? DEFAULT_PLANNER_OPTIONS,
   );
-  const [vrewXmlPath, setVrewXmlPath] = useState("");
-  const [vrewSourceVideoPath, setVrewSourceVideoPath] = useState("");
-  const [browsingField, setBrowsingField] = useState<BrowseFieldName | null>(null);
+  const [browsingField, setBrowsingField] = useState<PathFieldName | null>(null);
   const [importingPlan, setImportingPlan] = useState(false);
   const [recentPlans, setRecentPlans] = useState<RecentPlansResponse["plans"]>([]);
   const [recentPlansLoading, setRecentPlansLoading] = useState(false);
@@ -529,7 +525,7 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
     }));
   }
 
-  async function handleBrowse(field: BrowseFieldName) {
+  async function handleBrowse(field: PathFieldName) {
     setBrowsingField(field);
     setError(null);
 
@@ -554,16 +550,10 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
         return;
       }
 
-      if (field === "vrewXmlPath") {
-        setVrewXmlPath(data.path);
-      } else if (field === "vrewSourceVideoPath") {
-        setVrewSourceVideoPath(data.path);
-      } else {
-        setFormValues((current) => ({
-          ...current,
-          [field]: data.path,
-        }));
-      }
+      setFormValues((current) => ({
+        ...current,
+        [field]: data.path,
+      }));
     } catch (browseError) {
       setError(
         browseError instanceof Error
@@ -755,7 +745,7 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
         <div
           role="tablist"
           aria-label="Workflow tabs"
-          className="grid gap-2 rounded-[1.25rem] bg-surface-low/80 p-2 ring-1 ring-white/6 sm:inline-grid sm:grid-cols-3"
+          className="grid gap-2 rounded-[1.25rem] bg-surface-low/80 p-2 ring-1 ring-white/6 sm:inline-grid sm:grid-cols-2"
         >
           <button
             type="button"
@@ -776,22 +766,6 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
           <button
             type="button"
             role="tab"
-            aria-selected={activeWorkflowTab === "highlight"}
-            aria-controls="highlight-workflow-panel"
-            id="highlight-workflow-tab"
-            onClick={() => setActiveWorkflowTab("highlight")}
-            className={[
-              "h-11 rounded-xl px-5 text-sm font-semibold transition-all",
-              activeWorkflowTab === "highlight"
-                ? "bg-tertiary-soft text-tertiary shadow-[inset_0_0_0_1px_rgba(101,175,255,0.22)]"
-                : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
-            ].join(" ")}
-          >
-            하이라이트
-          </button>
-          <button
-            type="button"
-            role="tab"
             aria-selected={activeWorkflowTab === "options"}
             aria-controls="options-workflow-panel"
             id="options-workflow-tab"
@@ -807,12 +781,6 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
           </button>
         </div>
 
-        {activeWorkflowTab === "highlight" && error ? (
-          <div className="rounded-xl border border-danger/20 bg-danger/10 px-4 py-3 text-sm text-danger">
-            {error}
-          </div>
-        ) : null}
-
         {activeWorkflowTab === "shorts" ? (
           <section
             id="shorts-workflow-panel"
@@ -824,12 +792,7 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
               values={safeFormValues}
               status={phase}
               error={error}
-              browsingField={
-                browsingField === "vrewXmlPath" ||
-                browsingField === "vrewSourceVideoPath"
-                  ? null
-                  : browsingField
-              }
+              browsingField={browsingField}
               importingPlan={importingPlan}
               localSttStatus={localSttStatus}
               localSttBusy={localSttBusy}
@@ -939,23 +902,6 @@ export function HomeScreen({ initialPlannerOptions }: HomeScreenProps = {}) {
             ) : null}
 
             {result ? <GenerateResult result={result} clips={clips} /> : null}
-          </section>
-        ) : activeWorkflowTab === "highlight" ? (
-          <section
-            id="highlight-workflow-panel"
-            role="tabpanel"
-            aria-labelledby="highlight-workflow-tab"
-          >
-            <VrewHighlightPanel
-              xmlPath={vrewXmlPath}
-              browsing={browsingField === "vrewXmlPath"}
-              sourceVideoPath={vrewSourceVideoPath}
-              sourceVideoBrowsing={browsingField === "vrewSourceVideoPath"}
-              onXmlPathChange={setVrewXmlPath}
-              onBrowse={() => void handleBrowse("vrewXmlPath")}
-              onSourceVideoPathChange={setVrewSourceVideoPath}
-              onSourceVideoBrowse={() => void handleBrowse("vrewSourceVideoPath")}
-            />
           </section>
         ) : (
           <PlannerOptionsPanel
