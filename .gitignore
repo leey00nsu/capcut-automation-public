@@ -1,0 +1,16 @@
+node_modules/
+.next/
+next-env.d.ts
+/runs/
+tsconfig.tsbuildinfo
+.DS_Store
+.env*
+!.env.example
+/config/planner-options.json
+/config/planner-options.json.tmp-*
+desktop/capcut-automation-desktop/node_modules/
+desktop/capcut-automation-desktop/build/
+desktop/capcut-automation-desktop/artifacts/
+coverage/
+test-results/
+playwright-report/

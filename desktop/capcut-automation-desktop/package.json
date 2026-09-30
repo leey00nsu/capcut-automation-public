@@ -1,0 +1,29 @@
+{
+  "name": "capcut-automation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop wrapper for 127.0.0.1",
+  "scripts": {
+    "start": "electrobun dev",
+    "dev": "electrobun dev --watch",
+    "build": "electrobun build",
+    "build:current": "electrobun build",
+    "build:dmg": "npm run build:stable && node scripts/create-dmg.mjs",
+    "prepare:expanded": "node scripts/prepare-expanded-app.mjs",
+    "build:dmg:expanded": "node scripts/create-dmg.mjs",
+    "build:dmg:notarized": "npm run build:stable && APPLE_NOTARIZE=1 APPBUN_DMG_SIGN=1 node scripts/create-dmg.mjs",
+    "build:canary": "electrobun build --env=canary",
+    "build:stable": "electrobun build --env=stable",
+    "build:macos": "node scripts/build-platform.mjs macos",
+    "build:windows": "node scripts/build-platform.mjs windows",
+    "build:linux": "node scripts/build-platform.mjs linux",
+    "build:all": "node scripts/build-platform.mjs all"
+  },
+  "dependencies": {
+    "electrobun": "1.18.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "create-dmg": "^8.0.0"
+  }
+}

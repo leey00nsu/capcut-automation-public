@@ -1,0 +1,167 @@
+{
+  "cloud_draft_cover": true,
+  "cloud_draft_sync": true,
+  "cloud_package_completed_time": "",
+  "draft_cloud_capcut_purchase_info": "",
+  "draft_cloud_last_action_download": false,
+  "draft_cloud_package_type": "",
+  "draft_cloud_purchase_info": "",
+  "draft_cloud_template_id": "",
+  "draft_cloud_tutorial_info": "",
+  "draft_cloud_videocut_purchase_info": "",
+  "draft_cover": "draft_cover.jpg",
+  "draft_deeplink_url": "",
+  "draft_enterprise_info": {
+    "draft_enterprise_extra": "",
+    "draft_enterprise_id": "",
+    "draft_enterprise_name": "",
+    "enterprise_material": []
+  },
+  "draft_fold_path": "/template/base-template",
+  "draft_id": "1325AE07-C1A6-4BC9-B86E-0A7C29C40A08",
+  "draft_is_ae_produce": false,
+  "draft_is_ai_packaging_used": false,
+  "draft_is_ai_shorts": false,
+  "draft_is_ai_translate": false,
+  "draft_is_article_video_draft": false,
+  "draft_is_cloud_temp_draft": false,
+  "draft_is_from_deeplink": "false",
+  "draft_is_invisible": false,
+  "draft_is_web_article_video": false,
+  "draft_materials": [
+    {
+      "type": 0,
+      "value": [
+        {
+          "ai_group_type": "",
+          "create_time": 0,
+          "duration": 5000000,
+          "enter_from": 0,
+          "extra_info": "default-channel-profile.png",
+          "file_Path": "/template/default-channel-profile.png",
+          "height": 176,
+          "id": "79aa9c9b-ed42-45f7-91e3-5c001dbc9d76",
+          "import_time": 1774036102,
+          "import_time_ms": 1774036100963706,
+          "item_source": 1,
+          "md5": "",
+          "metetype": "photo",
+          "roughcut_time_range": {
+            "duration": -1,
+            "start": -1
+          },
+          "sub_time_range": {
+            "duration": -1,
+            "start": -1
+          },
+          "type": 0,
+          "width": 176
+        },
+        {
+          "ai_group_type": "",
+          "create_time": 0,
+          "duration": 33333,
+          "enter_from": 0,
+          "extra_info": "",
+          "file_Path": "",
+          "height": 0,
+          "id": "cd484075-d92a-4bc9-b45c-d093d2f9e71b",
+          "import_time": 1774036102,
+          "import_time_ms": 1774036100963706,
+          "item_source": 1,
+          "md5": "",
+          "metetype": "none",
+          "roughcut_time_range": {
+            "start": 0,
+            "duration": 33333
+          },
+          "sub_time_range": {
+            "start": -1,
+            "duration": -1
+          },
+          "type": 0,
+          "width": 0
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "value": []
+    },
+    {
+      "type": 2,
+      "value": []
+    },
+    {
+      "type": 3,
+      "value": []
+    },
+    {
+      "type": 6,
+      "value": []
+    },
+    {
+      "type": 7,
+      "value": []
+    },
+    {
+      "type": 8,
+      "value": []
+    },
+    {
+      "type": 18,
+      "value": [
+        {
+          "ai_group_type": "",
+          "create_time": 0,
+          "duration": 18100000,
+          "enter_from": 0,
+          "extra_info": "복합 클립1",
+          "file_Path": "./subdraft/EDA282C5-9C0B-4B3D-9728-975D74B59F57/sub_draft_config.json",
+          "height": 0,
+          "id": "BC7D8416-106C-47DB-8170-C75C1F03CCFD",
+          "import_time": 1774036394,
+          "import_time_ms": 1774036394527,
+          "item_source": 1,
+          "md5": "",
+          "metetype": "combination",
+          "roughcut_time_range": {
+            "duration": 18100000,
+            "start": 0
+          },
+          "sub_time_range": {
+            "duration": -1,
+            "start": -1
+          },
+          "type": 18,
+          "width": 0
+        }
+      ]
+    }
+  ],
+  "draft_materials_copied_info": [],
+  "draft_name": "Base Template",
+  "draft_need_rename_folder": false,
+  "draft_new_version": "163.0.0",
+  "draft_removable_storage_device": "",
+  "draft_root_path": "/template",
+  "draft_segment_extra_info": [
+    {
+      "extra_mask_aspect_ratio_locked": false,
+      "extra_segmend_id": "DB4F05E2-FC3A-433B-90BA-ACB073C2FFB7"
+    }
+  ],
+  "draft_timeline_materials_size_": 5112664124,
+  "draft_type": "",
+  "draft_web_article_video_enter_from": "",
+  "tm_draft_cloud_completed": "",
+  "tm_draft_cloud_entry_id": -1,
+  "tm_draft_cloud_modified": 0,
+  "tm_draft_cloud_parent_entry_id": -1,
+  "tm_draft_cloud_space_id": -1,
+  "tm_draft_cloud_user_id": -1,
+  "tm_draft_create": 0,
+  "tm_draft_modified": 0,
+  "tm_draft_removed": 0,
+  "tm_duration": 27433333
+}

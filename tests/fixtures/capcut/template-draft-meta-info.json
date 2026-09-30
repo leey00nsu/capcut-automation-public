@@ -1,0 +1,43 @@
+{
+  "draft_name": "Template Project",
+  "draft_fold_path": "/template/project",
+  "draft_root_path": "/template",
+  "tm_draft_create": 1111111111111111,
+  "tm_draft_modified": 1111111111111111,
+  "draft_materials": [
+    {
+      "type": 0,
+      "value": [
+        {
+          "id": "PHOTO-META-ID",
+          "metetype": "photo",
+          "file_Path": "/template/channel-profile.jpg",
+          "extra_info": "channel-profile.jpg",
+          "create_time": 1111111111,
+          "import_time": 1111111111,
+          "import_time_ms": 1111111111111111,
+          "roughcut_time_range": {
+            "start": -1,
+            "duration": -1
+          }
+        },
+        {
+          "id": "cd484075-d92a-4bc9-b45c-d093d2f9e71b",
+          "metetype": "none",
+          "file_Path": "",
+          "extra_info": "",
+          "create_time": 1111111111,
+          "import_time": 1111111111,
+          "import_time_ms": 1111111111111111,
+          "roughcut_time_range": {
+            "start": 0,
+            "duration": 33333
+          },
+          "duration": 33333,
+          "width": 0,
+          "height": 0
+        }
+      ]
+    }
+  ]
+}

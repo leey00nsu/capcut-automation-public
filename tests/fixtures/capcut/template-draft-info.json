@@ -1,0 +1,205 @@
+{
+  "name": "Template Project",
+  "duration": 12000000,
+  "canvas_config": {
+    "height": 1920,
+    "width": 1080
+  },
+  "materials": {
+    "videos": [
+      {
+        "id": "F8DA824C-2629-4789-BEF5-5D80FB7F89F6",
+        "path": "/template/source-video.mp4",
+        "material_name": "source-video.mp4",
+        "duration": 12000000,
+        "local_material_id": "e4b864f1-d7b8-4a8a-8986-296b003e17e7"
+      },
+      {
+        "id": "CD415B2C-2C51-4F16-BFCC-5F0FBAF05622",
+        "path": "default-channel-profile.png",
+        "material_name": "default-channel-profile.png",
+        "duration": 12000000
+      }
+    ],
+    "texts": [
+      {
+        "id": "639E8457-0149-401C-AF02-850CB3D505C2",
+        "content": "{\"text\":\"<작은 습관으로 하루를 바꾸는 방법 | 예시 채널>\",\"styles\":[{\"fill\":{\"color\":[1,1,1]},\"font\":{\"path\":\"/fonts/Title.otf\"},\"range\":[0,28],\"stroke\":{\"color\":[0,0,0],\"width\":0.08}}]}",
+        "transform": {
+          "rotation": 0,
+          "scale": {
+            "x": 1,
+            "y": 1
+          }
+        }
+      },
+      {
+        "id": "4049075A-6DF7-4646-9453-8D8C9ED416B3",
+        "content": "{\"text\":\"예시 채널\",\"styles\":[{\"fill\":{\"color\":[1,1,1]},\"font\":{\"path\":\"/fonts/Channel.otf\"},\"range\":[0,5],\"stroke\":{\"color\":[0,0,0],\"width\":0.06}}]}",
+        "transform": {
+          "rotation": 0,
+          "scale": {
+            "x": 1,
+            "y": 1
+          }
+        }
+      },
+      {
+        "id": "B77A1AB3-3E52-4146-A795-5194802F96B0",
+        "content": "{\"text\":\"작은 습관부터 시작해 보세요\",\"styles\":[{\"fill\":{\"color\":[1,1,1]},\"font\":{\"path\":\"/fonts/Body.otf\"},\"range\":[0,15],\"stroke\":{\"color\":[0,0,0],\"width\":0.05}}]}",
+        "transform": {
+          "rotation": 0,
+          "scale": {
+            "x": 1,
+            "y": 1
+          }
+        }
+      },
+      {
+        "id": "40A933D9-9F89-40B5-859A-0F8721A2EA09",
+        "content": "{\"text\":\"오늘의 작은 변화\",\"styles\":[{\"fill\":{\"color\":[0.6,0.9,0.2]},\"font\":{\"path\":\"/fonts/Highlight.otf\"},\"range\":[0,9],\"stroke\":{\"color\":[0,0.2,0],\"width\":0.09}}]}",
+        "transform": {
+          "rotation": 0,
+          "scale": {
+            "x": 1,
+            "y": 1
+          }
+        }
+      }
+    ]
+  },
+  "tracks": {
+    "videos": [
+      {
+        "id": "A3C21480-EB8A-44D4-8B7D-A4D6E6CC5E2C",
+        "segments": [
+          {
+            "id": "SEGMENT-MAIN-VIDEO",
+            "material_id": "F8DA824C-2629-4789-BEF5-5D80FB7F89F6",
+            "source_timerange": {
+              "duration": 12000000,
+              "start": 5000000
+            },
+            "target_timerange": {
+              "duration": 12000000,
+              "start": 0
+            },
+            "transform": {
+              "rotation": 0,
+              "scale": {
+                "x": 1.08,
+                "y": 1.08
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "66EEABC9-DA97-47AB-A86C-97D9ECC0B4EF",
+        "segments": [
+          {
+            "id": "SEGMENT-PROFILE",
+            "material_id": "CD415B2C-2C51-4F16-BFCC-5F0FBAF05622",
+            "source_timerange": {
+              "duration": 12000000,
+              "start": 0
+            },
+            "target_timerange": {
+              "duration": 12000000,
+              "start": 0
+            },
+            "transform": {
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "texts": [
+      {
+        "id": "B5EB7817-B4DC-4EA9-9A7D-182856BD9E33",
+        "segments": [
+          {
+            "id": "SEGMENT-TITLE",
+            "material_id": "639E8457-0149-401C-AF02-850CB3D505C2",
+            "target_timerange": {
+              "duration": 12000000,
+              "start": 0
+            },
+            "transform": {
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "F509B6CD-72DF-4B59-A1D6-46CC2042C573",
+        "segments": [
+          {
+            "id": "SEGMENT-CHANNEL",
+            "material_id": "4049075A-6DF7-4646-9453-8D8C9ED416B3",
+            "target_timerange": {
+              "duration": 12000000,
+              "start": 0
+            },
+            "transform": {
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "9468D4BC-6C85-45D1-8E50-B51D2B2514FA",
+        "segments": [
+          {
+            "id": "SEGMENT-BODY",
+            "material_id": "B77A1AB3-3E52-4146-A795-5194802F96B0",
+            "target_timerange": {
+              "duration": 12000000,
+              "start": 0
+            },
+            "transform": {
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "1A3382A2-64EC-4A2E-BD62-B32B835EB71F",
+        "segments": [
+          {
+            "id": "SEGMENT-HIGHLIGHT",
+            "material_id": "40A933D9-9F89-40B5-859A-0F8721A2EA09",
+            "target_timerange": {
+              "duration": 12000000,
+              "start": 0
+            },
+            "transform": {
+              "rotation": 0,
+              "scale": {
+                "x": 1,
+                "y": 1
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

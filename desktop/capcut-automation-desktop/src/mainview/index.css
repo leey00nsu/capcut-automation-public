@@ -1,0 +1,229 @@
+:root {
+  color-scheme: light;
+  --shell-ink: rgba(22, 22, 24, 0.92);
+  --shell-muted: rgba(55, 65, 81, 0.72);
+  --shell-border: rgba(15, 23, 42, 0.10);
+  --shell-toolbar: rgba(248, 248, 250, 0.84);
+  --shell-toolbar-height: 40px;
+  --shell-toolbar-left: 78px;
+  --shell-topbar-display: flex;
+  --shell-toolbar-border-alpha: 1;
+  --shell-origin-display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: "SF Pro Text", "Segoe UI", sans-serif;
+  background: #ffffff;
+}
+
+.shell {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #ffffff;
+}
+
+.topbar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: var(--shell-toolbar-height);
+  display: var(--shell-topbar-display);
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px 0 var(--shell-toolbar-left);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), var(--shell-toolbar));
+  border-bottom: calc(1px * var(--shell-toolbar-border-alpha)) solid var(--shell-border);
+  backdrop-filter: blur(24px) saturate(1.15);
+  z-index: 2;
+}
+
+.topbar-brand,
+.topbar-actions {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-actions {
+  flex: 0 1 auto;
+}
+
+.site-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex: 0 0 auto;
+}
+
+#site-name {
+  font-size: 12.5px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--shell-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-origin {
+  display: var(--shell-origin-display);
+  max-width: min(38vw, 360px);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--shell-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon-button {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 6px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  color: var(--shell-muted);
+  background: transparent;
+  font: 15px/1 "SF Pro Text", "Segoe UI", sans-serif;
+  cursor: default;
+}
+
+.icon-button:hover {
+  color: var(--shell-ink);
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.icon {
+  position: relative;
+  width: 13px;
+  height: 13px;
+  display: block;
+}
+
+.icon-reload {
+  border: 1.7px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+}
+
+.icon-reload::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -1px;
+  width: 4px;
+  height: 4px;
+  border-top: 1.7px solid currentColor;
+  border-right: 1.7px solid currentColor;
+  transform: rotate(20deg);
+}
+
+.icon-external {
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+}
+
+.icon-external::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 7px;
+  height: 7px;
+  border-top: 1.7px solid currentColor;
+  border-right: 1.7px solid currentColor;
+}
+
+.icon-external::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: -1px;
+  width: 8px;
+  height: 1.7px;
+  background: currentColor;
+  transform: rotate(-45deg);
+  transform-origin: right center;
+}
+
+.stage {
+  position: absolute;
+  inset: var(--shell-toolbar-height) 0 0 0;
+}
+
+.webview-mount {
+  width: 100%;
+  height: 100%;
+}
+
+.shell-status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: var(--shell-ink);
+  background: #ffffff;
+  z-index: 1;
+}
+
+.shell-status strong {
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.shell-status span {
+  max-width: 70vw;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--shell-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shell-status.is-hidden {
+  display: none;
+}
+
+.shell-status.is-error {
+  color: #991b1b;
+  background: #fff7f7;
+}
+
+electrobun-webview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    padding-left: 68px;
+  }
+
+  .site-origin {
+    display: none;
+  }
+}

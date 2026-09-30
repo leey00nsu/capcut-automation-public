@@ -1,0 +1,16 @@
+{
+  "audio_path": "",
+  "cover_height": 1920,
+  "cover_path": "draft_cover.jpg",
+  "cover_width": 1080,
+  "create_time": 0,
+  "draft_json_file": "draft_content.json",
+  "id": "EDA282C5-9C0B-4B3D-9728-975D74B59F57",
+  "import_time_ms": 1774036394527,
+  "is_from_sub_draft": true,
+  "name": "Base Template",
+  "rough_cut_duration": 18100000,
+  "rough_cut_start": 0,
+  "source": "timeline",
+  "type": "video"
+}

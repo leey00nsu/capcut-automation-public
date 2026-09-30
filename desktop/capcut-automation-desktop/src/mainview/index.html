@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CapCut Automation</title>
+  <link rel="stylesheet" href="index.css" />
+  <script type="module" src="views://mainview/index.js"></script>
+</head>
+<body>
+  <div class="shell" data-titlebar-style="unified">
+
+    <header class="topbar electrobun-webkit-app-region-drag" data-titlebar-style="unified">
+      <div class="topbar-brand">
+        <img id="site-icon" class="site-icon" src="views://mainview/icon.png" alt="" />
+        <strong id="site-name">CapCut Automation</strong>
+      </div>
+      <div class="topbar-actions electrobun-webkit-app-region-no-drag" aria-label="App controls">
+        <span id="site-origin" class="site-origin">127.0.0.1</span>
+        <button id="reload-app" class="icon-button" type="button" title="Reload" aria-label="Reload">
+          <span class="icon icon-reload" aria-hidden="true"></span>
+        </button>
+        <button id="open-external" class="icon-button" type="button" title="Open in browser" aria-label="Open in browser">
+          <span class="icon icon-external" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+    <main class="stage">
+      <div id="shell-status" class="shell-status" role="status">
+        <strong>Loading CapCut Automation</strong>
+        <span>127.0.0.1</span>
+      </div>
+      <div id="webview-mount" class="webview-mount"></div>
+    </main>
+  </div>
+</body>
+</html>
