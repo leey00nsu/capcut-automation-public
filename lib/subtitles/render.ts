@@ -2,13 +2,29 @@ import { readFile } from "node:fs/promises";
 import { parse, type Font } from "opentype.js";
 import sharp from "sharp";
 import type { SubtitleStyle } from "@/lib/subtitles/style";
+import { TEMPLATE_LAYOUT } from "@/lib/capcut/template-layout";
 
 export async function readSubtitleFont(path: string): Promise<Font> {
   const buffer = await readFile(path);
   return parse(buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength));
 }
 
-function wrapText(text: string, font: Font, size: number, width: number): string[] {
+export function subtitleFontName(font: Font): string {
+  // opentype.js 2 groups name tables by platform; also accept the older shape.
+  const names = font.names as unknown as Record<string, Record<string, unknown>>;
+  const table = names.windows ?? names.macintosh ?? names;
+  for (const key of ["fullName", "fontFamily", "postScriptName"]) {
+    const entry = table[key];
+    if (entry && typeof entry === "object") {
+      const localized = entry as Record<string, unknown>;
+      const name = localized.en ?? Object.values(localized)[0];
+      if (typeof name === "string" && name) return name;
+    }
+  }
+  throw new Error("폰트 이름을 읽을 수 없습니다.");
+}
+
+export function wrapSubtitleText(text: string, font: Font, size: number, width: number): string[] {
   const lines: string[] = [];
   let line = "";
   for (const character of Array.from(text)) {
@@ -34,10 +50,10 @@ export function subtitleSvg(text: string, style: SubtitleStyle, font: Font,
   const scale = canvas.width / 1080;
   const paddingX = style.paddingX * scale;
   const paddingY = style.paddingY * scale;
-  const lines = wrapText(text, font, size, canvas.width * 0.9 - paddingX * 2);
+  const lines = wrapSubtitleText(text, font, size, canvas.width * 0.9 - paddingX * 2);
   const lineHeight = size * 1.25;
   const videoHeight = canvas.width * 9 / 16;
-  const videoCenter = canvas.height * (0.5 + 0.045454545454545414);
+  const videoCenter = canvas.height * (0.5 + TEMPLATE_LAYOUT.videoOffsetY);
   const videoTop = videoCenter - videoHeight / 2;
   const centerY = videoTop + videoHeight * style.positionY / 100;
   const height = lineHeight * lines.length;

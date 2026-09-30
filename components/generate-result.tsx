@@ -50,6 +50,13 @@ export function GenerateResult({ result, clips }: GenerateResultProps) {
       </CardHeader>
 
       <CardContent className="space-y-4 px-6 pb-6 md:px-8 md:pb-8">
+        {result.projects.length > 0 ? (
+          <p className="text-sm leading-6 text-muted-foreground">
+            원본 영상을 그대로 참조하므로 파일 위치를 유지하고 외장 디스크를 연결해 두세요.
+            CapCut에서 파일 접근 오류가 나면 미디어 → 가져오기 → 장치에서 원본을 선택한 뒤
+            프로젝트를 새로 생성하세요.
+          </p>
+        ) : null}
         {result.warnings && result.warnings.length > 0 ? (
           <section className="space-y-3 rounded-[1.25rem] bg-surface-low px-5 py-5 ring-1 ring-white/6">
             <div className="flex items-center gap-3">

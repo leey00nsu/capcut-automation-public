@@ -23,4 +23,13 @@ describe("CapCut font references", () => {
     });
     expect(draft.materials.texts[0].font_path).toBe("");
   });
+  it("records the font display name in native and JSON-encoded text fields", () => {
+    const material = { font_path: "", font_name: "", font_title: "none",
+      content: JSON.stringify({ styles: [{ font: { id: "", path: "" } }] }) };
+    const result = patchTemplateFontPaths(material, "/project/Resources/fonts/Pretendard-Black.otf", "Pretendard Black") as typeof material;
+    expect(result).toMatchObject({ font_name: "Pretendard Black", font_title: "Pretendard Black" });
+    expect(JSON.parse(result.content).styles[0].font).toEqual({
+      id: "", path: "/project/Resources/fonts/Pretendard-Black.otf", name: "Pretendard Black",
+    });
+  });
 });

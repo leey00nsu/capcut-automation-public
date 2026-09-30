@@ -19,6 +19,7 @@ import type { ReviewedClip } from "@/components/clip-state";
 import { SubtitleFontFace, SubtitleText } from "@/components/subtitle-text";
 import type { SubtitleCue } from "@/lib/subtitles/cues";
 import type { SubtitleStyle } from "@/lib/subtitles/style";
+import { TEMPLATE_COVER_WIDTH, TEMPLATE_LAYOUT, TEMPLATE_STYLE } from "@/lib/capcut/template-layout";
 import {
   buildChannelImagePreviewSrc,
   buildLocalFontPreviewSrc,
@@ -34,25 +35,6 @@ type ClipPreviewStageProps = {
   subtitleCues?: SubtitleCue[];
   subtitleStyle?: SubtitleStyle;
 };
-
-const TEMPLATE_LAYOUT = {
-  title: { x: 0, y: -0.79 },
-  channelName: { x: 0.106018185913479, y: -0.4872298624754421 },
-  profileImage: { x: -0.2261496462543532, y: -0.48330058939096276 },
-  topGeneral: { x: 0, y: 0.4322200392927308 },
-  topHighlight: { x: 0, y: 0.5893909626719056 },
-  videoOffsetY: 0.045454545454545414,
-} as const;
-
-const TEMPLATE_COVER_WIDTH = 432;
-const TEMPLATE_STYLE = {
-  highlightFontPx: 30,
-  generalFontPx: 30,
-  channelFontPx: 30,
-  titleFontPx: 15.53,
-  profileSizePx: 47,
-  highlightStrokePx: 2.1,
-} as const;
 
 const PreviewPlayer = createPlayer({ features: videoFeatures });
 
@@ -322,9 +304,6 @@ export function ClipPreviewStage({
     () => buildChannelImagePreviewSrc(channelImagePath),
     [channelImagePath],
   );
-  const channelGroupX =
-    (TEMPLATE_LAYOUT.profileImage.x + TEMPLATE_LAYOUT.channelName.x) / 2;
-  const channelGroupY = -0.57;
 
   return (
     <div className="flex justify-center">
@@ -376,7 +355,7 @@ export function ClipPreviewStage({
           className="w-[82%]"
         >
           <div
-            className="relative text-center leading-[1.02] tracking-[-0.05em]"
+            className="relative text-center leading-[1.02]"
             style={{
               fontFamily:
                 '"CapCutTemplateFont","Pretendard","Apple SD Gothic Neo",sans-serif',
@@ -412,7 +391,7 @@ export function ClipPreviewStage({
           className="w-[82%]"
         >
           <div
-            className="text-center leading-[1.08] tracking-[-0.04em] text-white"
+            className="text-center leading-[1.08] text-white"
             style={{
               fontFamily:
                 '"CapCutTemplateFont","Pretendard","Apple SD Gothic Neo",sans-serif',
@@ -425,11 +404,11 @@ export function ClipPreviewStage({
         </Position>
 
         <Position
-          x={channelGroupX}
-          y={channelGroupY}
+          x={TEMPLATE_LAYOUT.channelGroup.x}
+          y={TEMPLATE_LAYOUT.channelGroup.y}
           className="w-[44%] max-w-[44%]"
         >
-          <div className="flex items-center justify-center gap-[1.6cqw]">
+          <div className="flex items-center justify-center" style={{ gap: `${TEMPLATE_STYLE.channelGapRatio * 100}cqw` }}>
             <div
               className="shrink-0 overflow-hidden rounded-full"
               style={{
@@ -444,7 +423,7 @@ export function ClipPreviewStage({
               />
             </div>
             <div
-              className="min-w-0 text-left leading-none tracking-[-0.04em] text-white"
+              className="min-w-0 break-words text-center leading-none text-white"
               style={{
                 fontFamily:
                   '"CapCutTemplateFont","Pretendard","Apple SD Gothic Neo",sans-serif',
@@ -463,7 +442,7 @@ export function ClipPreviewStage({
           className="w-[82%]"
         >
           <div
-            className="text-center leading-[1.18] tracking-[-0.02em] text-white"
+            className="text-center leading-[1.18] text-white"
             style={{
               fontFamily:
                 '"CapCutTemplateFont","Pretendard","Apple SD Gothic Neo",sans-serif',

@@ -10,6 +10,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { basename, dirname, join, relative } from "node:path";
+import { constants } from "node:fs";
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -21,10 +22,11 @@ import {
   getTemplateFontPath,
 } from "@/lib/capcut/template-defaults";
 import { patchTemplateFontPaths } from "@/lib/capcut/template-font";
+import { patchTemplateLayout } from "@/lib/capcut/patch-template-layout";
 import { addTranscriptSubtitles } from "@/lib/capcut/subtitles";
 import { parseTranscriptCues, type SubtitleCue } from "@/lib/subtitles/cues";
 import { subtitleStyleSchema, type SubtitleStyle } from "@/lib/subtitles/style";
-import { readSubtitleFont } from "@/lib/subtitles/render";
+import { readSubtitleFont, subtitleFontName } from "@/lib/subtitles/render";
 import {
   patchDraftInfo,
   type CapCutDraftInfo,
@@ -602,7 +604,7 @@ async function copyProjectMediaAsset(input: {
   const stagingPath = join(input.stagingProjectPath, relativePath);
 
   await mkdir(dirname(stagingPath), { recursive: true });
-  await copyFile(input.sourcePath, stagingPath);
+  await copyFile(input.sourcePath, stagingPath, constants.COPYFILE_FICLONE);
 
   return {
     finalPath: join(input.finalProjectPath, relativePath).normalize("NFC"),
@@ -781,6 +783,9 @@ async function patchProjectDraft(
   const videoMaterialId = typeZeroMaterials.find(
     (material) => material.metetype === "video",
   )?.id;
+  const bundledFont = getTemplateFontPath();
+  const font = await readSubtitleFont(bundledFont);
+  const fontName = subtitleFontName(font);
   const nextDraftInfo = patchDraftInfo(draftInfo, {
     projectName,
     videoPath: input.videoPath,
@@ -795,6 +800,7 @@ async function patchProjectDraft(
     topHighlightText: input.selection.topHighlightText,
     now,
   });
+  patchTemplateLayout(nextDraftInfo, font);
   const subtitleMaterialIds: string[] = [];
   if (input.subtitleStyle) {
     const assets = await addTranscriptSubtitles(nextDraftInfo, {
@@ -894,7 +900,10 @@ async function patchProjectDraft(
   });
 
   const projectDataFiles = await listProjectDataFiles(projectDirectoryPath);
-  const fontPath = getTemplateFontPath();
+  const fontRelativePath = join("Resources", "fonts", basename(bundledFont));
+  await mkdir(join(projectDirectoryPath, "Resources", "fonts"), { recursive: true });
+  await copyFile(bundledFont, join(projectDirectoryPath, fontRelativePath));
+  const fontPath = join(input.finalProjectPath, fontRelativePath);
   await Promise.all(projectDataFiles.map(async (filePath) => {
     const raw = await readFile(filePath, "utf8");
     let parsed: unknown;
@@ -903,7 +912,7 @@ async function patchProjectDraft(
     } catch {
       return;
     }
-    const patched = patchTemplateFontPaths(parsed, fontPath);
+    const patched = patchTemplateFontPaths(parsed, fontPath, fontName);
     if (JSON.stringify(parsed) !== JSON.stringify(patched)) {
       await writeFile(filePath, JSON.stringify(patched, null, 2), "utf8");
     }
